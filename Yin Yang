@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yin Yang — Eternal Balance</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400&family=Noto+Serif:ital,wght@0,400;1,300&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at center, #2a2a2a 0%, #111 60%, #000 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Noto Sans', sans-serif;
+      color: #666;
+      padding: 20px;
+      overflow: hidden;
+    }
+    
+    h1 {
+      font-family: 'Noto Serif', serif;
+      font-size: 2.4rem;
+      margin-bottom: 5px;
+      font-weight: 400;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+    }
+    
+    .yin {
+      color: #222;
+      text-shadow: 
+        1px 1px 0 #444,
+        0 0 20px rgba(255,255,255,0.2);
+    }
+    
+    .yang {
+      color: #ddd;
+      text-shadow: 
+        -1px -1px 0 #999,
+        0 0 20px rgba(255,255,255,0.3);
+    }
+    
+    .ampersand {
+      color: #555;
+      font-style: italic;
+      margin: 0 5px;
+    }
+    
+    .subtitle {
+      font-family: 'Noto Serif', serif;
+      font-size: 0.9rem;
+      color: #444;
+      margin-bottom: 30px;
+      letter-spacing: 6px;
+      font-style: italic;
+      font-weight: 300;
+    }
+    
+    .stats-container {
+      display: flex;
+      gap: 80px;
+      margin-bottom: 25px;
+      font-size: 1rem;
+      letter-spacing: 2px;
+    }
+    
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 300;
+      font-family: 'Noto Serif', serif;
+    }
+    
+    .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      opacity: 0.7;
+    }
+    
+    .dark-stat {
+      color: #333;
+      text-shadow: 0 0 10px rgba(255,255,255,0.15);
+    }
+    
+    .light-stat {
+      color: #bbb;
+      text-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    
+    .game-container {
+      position: relative;
+      border-radius: 50%;
+      box-shadow: 
+        0 0 80px rgba(0, 0, 0, 0.9),
+        0 0 150px rgba(0, 0, 0, 0.5),
+        inset 0 0 50px rgba(0, 0, 0, 0.3);
+    }
+    
+    #gameCanvas {
+      display: block;
+      border-radius: 50%;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 25px;
+      margin-top: 35px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    button {
+      padding: 14px 35px;
+      font-size: 0.75rem;
+      font-family: 'Noto Sans', sans-serif;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      border: 1px solid #3a3a3a;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      background: rgba(255,255,255,0.02);
+      color: #666;
+    }
+    
+    button:hover {
+      border-color: #555;
+      color: #999;
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 0 30px rgba(255,255,255,0.05);
+    }
+    
+    .btn-pause.paused {
+      border-color: #666;
+      color: #999;
+    }
+    
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #444;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    
+    .speed-control input {
+      width: 100px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #333;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    
+    .speed-control input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #666, #333);
+      border: 2px solid #555;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .speed-control input::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      border-color: #777;
+    }
+    
+    .philosophy {
+      margin-top: 40px;
+      text-align: center;
+      color: #3a3a3a;
+      font-size: 0.8rem;
+      line-height: 2.2;
+      max-width: 420px;
+      letter-spacing: 1px;
+    }
+    
+    .quote {
+      font-family: 'Noto Serif', serif;
+      font-style: italic;
+      color: #4a4a4a;
+      margin-top: 20px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    <span class="yin">Yin</span>
+    <span class="ampersand">&</span>
+    <span class="yang">Yang</span>
+  </h1>
+  
+  <div class="subtitle">Eternal Balance</div>
+  
+  <div class="stats-container">
+    <div class="stat">
+      <span class="stat-value dark-stat" id="darkScore">0</span>
+      <span class="stat-label dark-stat">Darkness</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value light-stat" id="lightScore">0</span>
+      <span class="stat-label light-stat">Light</span>
+    </div>
+  </div>
+  
+  <div class="game-container">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+  
+  <div class="controls">
+    <button class="btn-pause" id="pauseBtn" onclick="togglePause()">Pause</button>
+    <button class="btn-reset" onclick="resetGame()">Restore</button>
+    <div class="speed-control">
+      <span>Flow</span>
+      <input type="range" id="speedSlider" min="2" max="10" value="5" onchange="updateSpeed()">
+    </div>
+  </div>
+  
+  <div class="philosophy">
+    <p>The dark dwells in light. The light dwells in darkness.</p>
+    <p>Each reshapes only where opposites embrace.</p>
+    <p class="quote">"The Tao that can be told is not the eternal Tao."</p>
+  </div>
+
+  <script>
+    // High-resolution canvas
+    const CANVAS_SIZE = 520;
+    const PIXEL_RATIO = window.devicePixelRatio || 1;
+    const CELL_SIZE = 4; // Smaller cells for smoother appearance
+    const GRID_SIZE = Math.floor(CANVAS_SIZE / CELL_SIZE);
+    const CENTER = CANVAS_SIZE / 2;
+    const RADIUS = CANVAS_SIZE / 2 - 10;
+    
+    const EMPTY = 0;
+    const DARK = 1;
+    const LIGHT = 2;
+    
+    // State
+    let grid = [];
+    let darkBall, lightBall;
+    let isRunning = true;
+    let baseSpeed = 5;
+    let animationId = null;
+    let lastTime = 0;
+    
+    // DOM
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const darkScoreEl = document.getElementById('darkScore');
+    const lightScoreEl = document.getElementById('lightScore');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const speedSlider = document.getElementById('speedSlider');
+    
+    // Set up high-DPI canvas
+    canvas.width = CANVAS_SIZE * PIXEL_RATIO;
+    canvas.height = CANVAS_SIZE * PIXEL_RATIO;
+    canvas.style.width = CANVAS_SIZE + 'px';
+    canvas.style.height = CANVAS_SIZE + 'px';
+    ctx.scale(PIXEL_RATIO, PIXEL_RATIO);
+    
+    // Smooth rendering
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    
+    class Ball {
+      constructor(type) {
+        this.type = type;
+        this.radius = 12;
+        this.x = 0;
+        this.y = 0;
+        this.vx = 0;
+        this.vy = 0;
+        this.trail = [];
+        this.maxTrail = 20;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        
+        this.spawn();
+      }
+      
+      spawn() {
+        const targetTerritory = this.type === DARK ? LIGHT : DARK;
+        let found = false;
+        let attempts = 0;
+        
+        while (!found && attempts < 2000) {
+          // Random position inside circle
+          const angle = Math.random() * Math.PI * 2;
+          const r = Math.random() * (RADIUS - 50);
+          const x = CENTER + Math.cos(angle) * r;
+          const y = CENTER + Math.sin(angle) * r;
+          
+          const gridX = Math.floor(x / CELL_SIZE);
+          const gridY = Math.floor(y / CELL_SIZE);
+          
+          if (gridX >= 0 && gridX < GRID_SIZE && gridY >= 0 && gridY < GRID_SIZE) {
+            if (grid[gridY][gridX] === targetTerritory) {
+              // Check area around spawn point
+              let validArea = true;
+              for (let dy = -3; dy <= 3 && validArea; dy++) {
+                for (let dx = -3; dx <= 3 && validArea; dx++) {
+                  const cx = gridX + dx;
+                  const cy = gridY + dy;
+                  if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
+                    if (grid[cy][cx] !== targetTerritory && grid[cy][cx] !== EMPTY) {
+                      validArea = false;
+                    }
+                  }
+                }
+              }
+              
+              if (validArea) {
+                this.x = x;
+                this.y = y;
+                found = true;
+              }
+            }
+          }
+          attempts++;
+        }
+        
+        if (!found) {
+          // Fallback positions
+          if (this.type === DARK) {
+            this.x = CENTER + RADIUS * 0.4;
+            this.y = CENTER;
+          } else {
+            this.x = CENTER - RADIUS * 0.4;
+            this.y = CENTER;
+          }
+        }
+        
+        // Random velocity
+        const angle = Math.random() * Math.PI * 2;
+        this.vx = Math.cos(angle) * baseSpeed;
+        this.vy = Math.sin(angle) * baseSpeed;
+      }
+      
+      update(deltaTime) {
+        const dt = Math.min(deltaTime / 16, 2); // Normalize to ~60fps
+        
+        // Update pulse
+        this.pulsePhase += 0.05;
+        
+        // Store trail
+        this.trail.push({ x: this.x, y: this.y, age: 0 });
+        if (this.trail.length > this.maxTrail) {
+          this.trail.shift();
+        }
+        // Age trail
+        this.trail.forEach(t => t.age++);
+        
+        // Calculate next position
+        let nextX = this.x + this.vx * dt;
+        let nextY = this.y + this.vy * dt;
+        
+        // Check boundaries
+        const distFromCenter = Math.sqrt((nextX - CENTER) ** 2 + (nextY - CENTER) ** 2);
+        
+        // Bounce off circle edge
+        if (distFromCenter > RADIUS - this.radius) {
+          const nx = (nextX - CENTER) / distFromCenter;
+          const ny = (nextY - CENTER) / distFromCenter;
+          const dot = this.vx * nx + this.vy * ny;
+          this.vx -= 2 * dot * nx;
+          this.vy -= 2 * dot * ny;
+          
+          // Push back inside
+          nextX = CENTER + nx * (RADIUS - this.radius - 2);
+          nextY = CENTER + ny * (RADIUS - this.radius - 2);
+        }
+        
+        // Check if moving into wrong territory
+        const targetTerritory = this.type === DARK ? LIGHT : DARK;
+        const gridX = Math.floor(nextX / CELL_SIZE);
+        const gridY = Math.floor(nextY / CELL_SIZE);
+        
+        let blocked = false;
+        if (gridX >= 0 && gridX < GRID_SIZE && gridY >= 0 && gridY < GRID_SIZE) {
+          // Check if we're trying to enter our own territory
+          if (grid[gridY][gridX] === this.type) {
+            blocked = true;
+          }
+        }
+        
+        if (blocked) {
+          // Reflect and add randomness
+          this.vx = -this.vx + (Math.random() - 0.5) * 3;
+          this.vy = -this.vy + (Math.random() - 0.5) * 3;
+        } else {
+          this.x = nextX;
+          this.y = nextY;
+        }
+        
+        // Normalize speed with slight variation
+        const speed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+        const targetSpeed = baseSpeed + Math.sin(this.pulsePhase * 0.5) * 0.5;
+        if (speed > 0) {
+          this.vx = (this.vx / speed) * targetSpeed;
+          this.vy = (this.vy / speed) * targetSpeed;
+        }
+        
+        // Chip away at boundary cells
+        this.chipBoundary();
+      }
+      
+      chipBoundary() {
+        const enemyTerritory = this.type === DARK ? LIGHT : DARK;
+        const myTerritory = this.type;
+        
+        const gridX = Math.floor(this.x / CELL_SIZE);
+        const gridY = Math.floor(this.y / CELL_SIZE);
+        
+        // Check cells in range
+        const checkRadius = Math.ceil(this.radius / CELL_SIZE) + 1;
+        
+        for (let dy = -checkRadius; dy <= checkRadius; dy++) {
+          for (let dx = -checkRadius; dx <= checkRadius; dx++) {
+            const cx = gridX + dx;
+            const cy = gridY + dy;
+            
+            if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
+              // Looking for enemy cells that border my territory
+              if (grid[cy][cx] === enemyTerritory) {
+                // Check if this cell borders my territory
+                if (this.cellBordersTerritory(cx, cy, myTerritory)) {
+                  // Check distance from ball
+                  const cellCenterX = cx * CELL_SIZE + CELL_SIZE / 2;
+                  const cellCenterY = cy * CELL_SIZE + CELL_SIZE / 2;
+                  const dist = Math.sqrt((this.x - cellCenterX) ** 2 + (this.y - cellCenterY) ** 2);
+                  
+                  if (dist < this.radius + CELL_SIZE * 0.6) {
+                    // Chip this cell! Convert to my territory
+                    grid[cy][cx] = myTerritory;
+                    
+                    // Slight bounce
+                    this.vx += (Math.random() - 0.5) * 1.5;
+                    this.vy += (Math.random() - 0.5) * 1.5;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      cellBordersTerritory(cx, cy, territory) {
+        const neighbors = [
+          [-1, 0], [1, 0], [0, -1], [0, 1]
+        ];
+        
+        for (const [dx, dy] of neighbors) {
+          const nx = cx + dx;
+          const ny = cy + dy;
+          if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+            if (grid[ny][nx] === territory) {
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+      
+      draw() {
+        // Draw trail with gradient fade
+        for (let i = 0; i < this.trail.length; i++) {
+          const t = this.trail[i];
+          const progress = i / this.trail.length;
+          const alpha = progress * 0.5;
+          const size = progress * this.radius * 0.8;
+          
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, size, 0, Math.PI * 2);
+          
+          if (this.type === DARK) {
+            ctx.fillStyle = `rgba(20, 20, 20, ${alpha})`;
+          } else {
+            ctx.fillStyle = `rgba(240, 240, 235, ${alpha})`;
+          }
+          ctx.fill();
+        }
+        
+        // Outer glow
+        const glowRadius = this.radius + 8 + Math.sin(this.pulsePhase) * 2;
+        const glowGradient = ctx.createRadialGradient(
+          this.x, this.y, this.radius,
+          this.x, this.y, glowRadius
+        );
+        
+        if (this.type === DARK) {
+          glowGradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+          glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        } else {
+          glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+          glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        }
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, glowRadius, 0, Math.PI * 2);
+        ctx.fillStyle = glowGradient;
+        ctx.fill();
+        
+        // Main ball gradient
+        const ballGradient = ctx.createRadialGradient(
+          this.x - this.radius * 0.3, 
+          this.y - this.radius * 0.3, 
+          0,
+          this.x, 
+          this.y, 
+          this.radius
+        );
+        
+        if (this.type === DARK) {
+          ballGradient.addColorStop(0, '#4a4a4a');
+          ballGradient.addColorStop(0.4, '#2a2a2a');
+          ballGradient.addColorStop(0.8, '#151515');
+          ballGradient.addColorStop(1, '#050505');
+        } else {
+          ballGradient.addColorStop(0, '#ffffff');
+          ballGradient.addColorStop(0.4, '#f5f5f0');
+          ballGradient.addColorStop(0.8, '#e8e8e0');
+          ballGradient.addColorStop(1, '#d5d5cc');
+        }
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = ballGradient;
+        ctx.fill();
+        
+        // Inner opposite dot
+        const dotRadius = this.radius * 0.25;
+        const dotGradient = ctx.createRadialGradient(
+          this.x - dotRadius * 0.2,
+          this.y - dotRadius * 0.2,
+          0,
+          this.x,
+          this.y,
+          dotRadius
+        );
+        
+        if (this.type === DARK) {
+          dotGradient.addColorStop(0, '#ffffff');
+          dotGradient.addColorStop(1, '#cccccc');
+        } else {
+          dotGradient.addColorStop(0, '#333333');
+          dotGradient.addColorStop(1, '#111111');
+        }
+        
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, dotRadius, 0, Math.PI * 2);
+        ctx.fillStyle = dotGradient;
+        ctx.fill();
+        
+        // Highlight reflection
+        ctx.beginPath();
+        ctx.arc(
+          this.x - this.radius * 0.35,
+          this.y - this.radius * 0.35,
+          this.radius * 0.2,
+          0, Math.PI * 2
+        );
+        ctx.fillStyle = this.type === DARK 
+          ? 'rgba(255, 255, 255, 0.15)' 
+          : 'rgba(255, 255, 255, 0.5)';
+        ctx.fill();
+      }
+    }
+    
+    function initializeGrid() {
+      grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(EMPTY));
+      
+      const gridCenter = GRID_SIZE / 2;
+      const gridRadius = (RADIUS / CELL_SIZE);
+      
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const dx = x - gridCenter;
+          const dy = y - gridCenter;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          // Only inside circle
+          if (dist <= gridRadius - 0.5) {
+            const halfR = gridRadius / 2;
+            
+            // Top small circle center (in grid coords)
+            const topCenterY = gridCenter - halfR;
+            const topDist = Math.sqrt(dx * dx + (y - topCenterY) ** 2);
+            
+            // Bottom small circle center
+            const bottomCenterY = gridCenter + halfR;
+            const bottomDist = Math.sqrt(dx * dx + (y - bottomCenterY) ** 2);
+            
+            let cellType;
+            
+            // Classic yin-yang curves
+            if (topDist <= halfR) {
+              // Inside top semicircle (light)
+              cellType = LIGHT;
+            } else if (bottomDist <= halfR) {
+              // Inside bottom semicircle (dark)
+              cellType = DARK;
+            } else {
+              // Main division by x
+              cellType = dx < 0 ? DARK : LIGHT;
+            }
+            
+            // Small dots
+            const dotRadius = gridRadius / 8;
+            const topDotDist = Math.sqrt(dx * dx + (y - topCenterY) ** 2);
+            const bottomDotDist = Math.sqrt(dx * dx + (y - bottomCenterY) ** 2);
+            
+            if (topDotDist <= dotRadius) {
+              cellType = DARK; // Dark dot in light
+            }
+            if (bottomDotDist <= dotRadius) {
+              cellType = LIGHT; // Light dot in dark
+            }
+            
+            grid[y][x] = cellType;
+          }
+        }
+      }
+      
+      // Create balls
+      darkBall = new Ball(DARK);
+      lightBall = new Ball(LIGHT);
+    }
+    
+    function draw() {
+      // Clear
+      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      
+      // Clip to circle
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(CENTER, CENTER, RADIUS, 0, Math.PI * 2);
+      ctx.clip();
+      
+      // Background gradient
+      const bgGradient = ctx.createRadialGradient(
+        CENTER, CENTER, 0,
+        CENTER, CENTER, RADIUS
+      );
+      bgGradient.addColorStop(0, '#888');
+      bgGradient.addColorStop(1, '#666');
+      ctx.fillStyle = bgGradient;
+      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      
+      // Create offscreen canvas for smoother cell rendering
+      const cellCanvas = document.createElement('canvas');
+      cellCanvas.width = GRID_SIZE;
+      cellCanvas.height = GRID_SIZE;
+      const cellCtx = cellCanvas.getContext('2d');
+      const imageData = cellCtx.createImageData(GRID_SIZE, GRID_SIZE);
+      
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          const idx = (y * GRID_SIZE + x) * 4;
+          
+          if (grid[y][x] === DARK) {
+            // Rich dark with subtle variation
+            const variation = Math.sin(x * 0.1) * 5 + Math.cos(y * 0.1) * 5;
+            imageData.data[idx] = 15 + variation;
+            imageData.data[idx + 1] = 15 + variation;
+            imageData.data[idx + 2] = 18 + variation;
+            imageData.data[idx + 3] = 255;
+          } else if (grid[y][x] === LIGHT) {
+            // Warm cream white with variation
+            const variation = Math.sin(x * 0.15) * 3 + Math.cos(y * 0.15) * 3;
+            imageData.data[idx] = 245 + variation;
+            imageData.data[idx + 1] = 243 + variation;
+            imageData.data[idx + 2] = 235 + variation;
+            imageData.data[idx + 3] = 255;
+          } else {
+            imageData.data[idx + 3] = 0;
+          }
+        }
+      }
+      
+      cellCtx.putImageData(imageData, 0, 0);
+      
+      // Draw scaled up with smoothing
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(cellCanvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      
+      // Draw boundary highlight
+      ctx.strokeStyle = 'rgba(128, 128, 128, 0.15)';
+      ctx.lineWidth = 1;
+      
+      for (let y = 1; y < GRID_SIZE - 1; y++) {
+        for (let x = 1; x < GRID_SIZE - 1; x++) {
+          if (grid[y][x] !== EMPTY) {
+            const isDarkBorder = grid[y][x] === DARK && (
+              grid[y-1][x] === LIGHT || grid[y+1][x] === LIGHT ||
+              grid[y][x-1] === LIGHT || grid[y][x+1] === LIGHT
+            );
+            const isLightBorder = grid[y][x] === LIGHT && (
+              grid[y-1][x] === DARK || grid[y+1][x] === DARK ||
+              grid[y][x-1] === DARK || grid[y][x+1] === DARK
+            );
+            
+            if (isDarkBorder || isLightBorder) {
+              const px = x * CELL_SIZE;
+              const py = y * CELL_SIZE;
+              ctx.fillStyle = 'rgba(128, 128, 128, 0.08)';
+              ctx.fillRect(px, py, CELL_SIZE, CELL_SIZE);
+            }
+          }
+        }
+      }
+      
+      // Draw balls
+      darkBall.draw();
+      lightBall.draw();
+      
+      ctx.restore();
+      
+      // Draw elegant border
+      ctx.beginPath();
+      ctx.arc(CENTER, CENTER, RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = '#2a2a2a';
+      ctx.lineWidth = 6;
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.arc(CENTER, CENTER, RADIUS + 2, 0, Math.PI * 2);
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+    
+    function countScores() {
+      let dark = 0, light = 0;
+      for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+          if (grid[y][x] === DARK) dark++;
+          else if (grid[y][x] === LIGHT) light++;
+        }
+      }
+      return { dark, light };
+    }
+    
+    function updateScores() {
+      const scores = countScores();
+      darkScoreEl.textContent = scores.dark;
+      lightScoreEl.textContent = scores.light;
+    }
+    
+    function gameLoop(timestamp) {
+      const deltaTime = timestamp - lastTime;
+      lastTime = timestamp;
+      
+      if (isRunning) {
+        darkBall.update(deltaTime);
+        lightBall.update(deltaTime);
+        updateScores();
+      }
+      
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+    
+    function togglePause() {
+      isRunning = !isRunning;
+      pauseBtn.textContent = isRunning ? 'Pause' : 'Resume';
+      pauseBtn.classList.toggle('paused', !isRunning);
+    }
+    
+    function resetGame() {
+      initializeGrid();
+      isRunning = true;
+      pauseBtn.textContent = 'Pause';
+      pauseBtn.classList.remove('paused');
+    }
+    
+    function updateSpeed() {
+      baseSpeed = parseInt(speedSlider.value);
+    }
+    
+    // Initialize and start
+    initializeGrid();
+    lastTime = performance.now();
+    animationId = requestAnimationFrame(gameLoop);
+  </script>
+</body>
+</html>
