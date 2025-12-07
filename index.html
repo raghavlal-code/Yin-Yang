@@ -65,44 +65,6 @@
       font-weight: 300;
     }
     
-    .stats-container {
-      display: flex;
-      gap: 80px;
-      margin-bottom: 25px;
-      font-size: 1rem;
-      letter-spacing: 2px;
-    }
-    
-    .stat {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .stat-value {
-      font-size: 1.8rem;
-      font-weight: 300;
-      font-family: 'Noto Serif', serif;
-    }
-    
-    .stat-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      opacity: 0.7;
-    }
-    
-    .dark-stat {
-      color: #333;
-      text-shadow: 0 0 10px rgba(255,255,255,0.15);
-    }
-    
-    .light-stat {
-      color: #bbb;
-      text-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-    
     .game-container {
       position: relative;
       border-radius: 50%;
@@ -126,33 +88,6 @@
       align-items: center;
     }
     
-    button {
-      padding: 14px 35px;
-      font-size: 0.75rem;
-      font-family: 'Noto Sans', sans-serif;
-      font-weight: 300;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      border: 1px solid #3a3a3a;
-      border-radius: 30px;
-      cursor: pointer;
-      transition: all 0.4s ease;
-      background: rgba(255,255,255,0.02);
-      color: #666;
-    }
-    
-    button:hover {
-      border-color: #555;
-      color: #999;
-      background: rgba(255,255,255,0.05);
-      box-shadow: 0 0 30px rgba(255,255,255,0.05);
-    }
-    
-    .btn-pause.paused {
-      border-color: #666;
-      color: #999;
-    }
-    
     .speed-control {
       display: flex;
       align-items: center;
@@ -164,7 +99,7 @@
     }
     
     .speed-control input {
-      width: 100px;
+      width: 120px;
       height: 4px;
       -webkit-appearance: none;
       appearance: none;
@@ -193,19 +128,33 @@
     .philosophy {
       margin-top: 40px;
       text-align: center;
-      color: #3a3a3a;
-      font-size: 0.8rem;
-      line-height: 2.2;
-      max-width: 420px;
-      letter-spacing: 1px;
+      max-width: 480px;
+      min-height: 100px;
     }
     
     .quote {
       font-family: 'Noto Serif', serif;
       font-style: italic;
       color: #4a4a4a;
-      margin-top: 20px;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+    }
+    
+    .quote.fade-out {
+      opacity: 0;
+    }
+    
+    .quote-author {
+      display: block;
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: #3a3a3a;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-family: 'Noto Sans', sans-serif;
+      font-style: normal;
     }
   </style>
 </head>
@@ -218,44 +167,127 @@
   
   <div class="subtitle">Eternal Balance</div>
   
-  <div class="stats-container">
-    <div class="stat">
-      <span class="stat-value dark-stat" id="darkScore">0</span>
-      <span class="stat-label dark-stat">Darkness</span>
-    </div>
-    <div class="stat">
-      <span class="stat-value light-stat" id="lightScore">0</span>
-      <span class="stat-label light-stat">Light</span>
-    </div>
-  </div>
-  
   <div class="game-container">
     <canvas id="gameCanvas"></canvas>
   </div>
   
   <div class="controls">
-    <button class="btn-pause" id="pauseBtn" onclick="togglePause()">Pause</button>
-    <button class="btn-reset" onclick="resetGame()">Restore</button>
     <div class="speed-control">
       <span>Flow</span>
-      <input type="range" id="speedSlider" min="2" max="10" value="5" onchange="updateSpeed()">
+      <input type="range" id="speedSlider" min="2" max="12" value="5" onchange="updateSpeed()">
     </div>
   </div>
   
   <div class="philosophy">
-    <p>The dark dwells in light. The light dwells in darkness.</p>
-    <p>Each reshapes only where opposites embrace.</p>
-    <p class="quote">"The Tao that can be told is not the eternal Tao."</p>
+    <p class="quote" id="quoteText"></p>
   </div>
 
   <script>
+    // Quotes collection
+    const quotes = [
+      { text: "The Tao that can be told is not the eternal Tao.", author: "Lao Tzu" },
+      { text: "In the pursuit of learning, every day something is acquired. In the pursuit of Tao, every day something is dropped.", author: "Lao Tzu" },
+      { text: "Nature does not hurry, yet everything is accomplished.", author: "Lao Tzu" },
+      { text: "The softest things in the world overcome the hardest things in the world.", author: "Lao Tzu" },
+      { text: "When I let go of what I am, I become what I might be.", author: "Lao Tzu" },
+      { text: "Life is a series of natural and spontaneous changes. Don't resist them; that only creates sorrow.", author: "Lao Tzu" },
+      { text: "The flame that burns twice as bright burns half as long.", author: "Lao Tzu" },
+      { text: "Be still like a mountain and flow like a great river.", author: "Lao Tzu" },
+      { text: "Darkness within darkness. The gateway to all understanding.", author: "Lao Tzu" },
+      { text: "What the caterpillar calls the end, the rest of the world calls a butterfly.", author: "Lao Tzu" },
+      { text: "The usefulness of a pot comes from its emptiness.", author: "Lao Tzu" },
+      { text: "To hold, you must first open your hand. Let go.", author: "Lao Tzu" },
+      { text: "Those who know do not speak. Those who speak do not know.", author: "Lao Tzu" },
+      { text: "Great acts are made up of small deeds.", author: "Lao Tzu" },
+      { text: "Music in the soul can be heard by the universe.", author: "Lao Tzu" },
+      { text: "Knowing others is intelligence; knowing yourself is true wisdom.", author: "Lao Tzu" },
+      { text: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+      { text: "He who conquers others is strong; he who conquers himself is mighty.", author: "Lao Tzu" },
+      { text: "The snow goose need not bathe to make itself white. Neither need you do anything but be yourself.", author: "Lao Tzu" },
+      { text: "Stop thinking, and end your problems.", author: "Lao Tzu" },
+      { text: "At the center of your being you have the answer; you know who you are and you know what you want.", author: "Lao Tzu" },
+      { text: "New beginnings are often disguised as painful endings.", author: "Lao Tzu" },
+      { text: "If you are depressed, you are living in the past. If you are anxious, you are living in the future. If you are at peace, you are living in the present.", author: "Lao Tzu" },
+      { text: "Watch your thoughts, they become your words. Watch your words, they become your actions.", author: "Lao Tzu" },
+      { text: "The best fighter is never angry.", author: "Lao Tzu" },
+      { text: "Care about what other people think and you will always be their prisoner.", author: "Lao Tzu" },
+      { text: "Act without expectation.", author: "Lao Tzu" },
+      { text: "Because one believes in oneself, one doesn't try to convince others.", author: "Lao Tzu" },
+      { text: "A good traveler has no fixed plans and is not intent on arriving.", author: "Lao Tzu" },
+      { text: "Time is a created thing. To say 'I don't have time' is to say 'I don't want to.'", author: "Lao Tzu" },
+      { text: "Surrender your self-interest. Love others as much as you love yourself.", author: "Lao Tzu" },
+      { text: "When you realize there is nothing lacking, the whole world belongs to you.", author: "Lao Tzu" },
+      { text: "Manifest plainness, embrace simplicity, reduce selfishness, have few desires.", author: "Lao Tzu" },
+      { text: "Being deeply loved by someone gives you strength, while loving someone deeply gives you courage.", author: "Lao Tzu" },
+      { text: "He who knows that enough is enough will always have enough.", author: "Lao Tzu" },
+      { text: "To see things in the seed, that is genius.", author: "Lao Tzu" },
+      { text: "The wise man is one who knows what he does not know.", author: "Lao Tzu" },
+      { text: "Fill your bowl to the brim and it will spill. Keep sharpening your knife and it will blunt.", author: "Lao Tzu" },
+      { text: "Health is the greatest possession. Contentment is the greatest treasure. Confidence is the greatest friend.", author: "Lao Tzu" },
+      { text: "If you do not change direction, you may end up where you are heading.", author: "Lao Tzu" },
+      { text: "Silence is a source of great strength.", author: "Lao Tzu" },
+      { text: "Simplicity, patience, compassion. These three are your greatest treasures.", author: "Lao Tzu" },
+      { text: "The master observes the world but trusts his inner vision.", author: "Lao Tzu" },
+      { text: "A man with outward courage dares to die; a man with inner courage dares to live.", author: "Lao Tzu" },
+      { text: "To understand the limitation of things, desire them.", author: "Lao Tzu" },
+      { text: "Do the difficult things while they are easy and do the great things while they are small.", author: "Lao Tzu" },
+      { text: "There is no greater danger than underestimating your opponent.", author: "Lao Tzu" },
+      { text: "Respond intelligently even to unintelligent treatment.", author: "Lao Tzu" },
+      { text: "One who is too insistent on his own views finds few to agree with him.", author: "Lao Tzu" },
+      { text: "Close your eyes. Look inside. Feel the stillness.", author: "Zen Proverb" },
+      { text: "Before enlightenment, chop wood, carry water. After enlightenment, chop wood, carry water.", author: "Zen Proverb" },
+      { text: "No snowflake ever falls in the wrong place.", author: "Zen Proverb" },
+      { text: "When walking, walk. When eating, eat.", author: "Zen Proverb" },
+      { text: "Sitting quietly, doing nothing, spring comes, and the grass grows by itself.", author: "Zen Proverb" },
+      { text: "The obstacle is the path.", author: "Zen Proverb" },
+      { text: "Let go, or be dragged.", author: "Zen Proverb" },
+      { text: "The quieter you become, the more you can hear.", author: "Ram Dass" },
+      { text: "We are not going in circles, we are going upwards. The path is a spiral.", author: "Hermann Hesse" },
+      { text: "The only way to make sense out of change is to plunge into it, move with it, and join the dance.", author: "Alan Watts" },
+      { text: "Muddy water is best cleared by leaving it alone.", author: "Alan Watts" },
+      { text: "You are a function of what the whole universe is doing in the same way that a wave is a function of what the whole ocean is doing.", author: "Alan Watts" },
+      { text: "The meaning of life is just to be alive. It is so plain and so obvious and so simple.", author: "Alan Watts" },
+      { text: "This is the real secret of life — to be completely engaged with what you are doing in the here and now.", author: "Alan Watts" },
+      { text: "Every explicit duality is an implicit unity.", author: "Alan Watts" },
+      { text: "Without the darkness, you could not appreciate the light.", author: "Unknown" },
+      { text: "In the dance of yin and yang, neither leads — both follow.", author: "Unknown" },
+      { text: "Balance is not something you find, it's something you create.", author: "Jana Kingsford" },
+      { text: "Flow with whatever may happen and let your mind be free.", author: "Zhuangzi" },
+      { text: "Happiness is the absence of striving for happiness.", author: "Zhuangzi" },
+      { text: "We cling to our own point of view, as though everything depended on it. Yet our opinions have no permanence.", author: "Zhuangzi" },
+      { text: "The fish trap exists because of the fish. Once you've gotten the fish you can forget the trap.", author: "Zhuangzi" },
+      { text: "Great knowledge sees all in one. Small knowledge breaks down into the many.", author: "Zhuangzi" }
+    ];
+    
+    let currentQuoteIndex = Math.floor(Math.random() * quotes.length);
+    const quoteElement = document.getElementById('quoteText');
+    
+    function showQuote() {
+      const quote = quotes[currentQuoteIndex];
+      quoteElement.innerHTML = `"${quote.text}"<span class="quote-author">— ${quote.author}</span>`;
+    }
+    
+    function rotateQuote() {
+      quoteElement.classList.add('fade-out');
+      
+      setTimeout(() => {
+        currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+        showQuote();
+        quoteElement.classList.remove('fade-out');
+      }, 1000);
+    }
+    
+    // Show initial quote and rotate every 8 seconds
+    showQuote();
+    setInterval(rotateQuote, 8000);
+
     // High-resolution canvas
-    const CANVAS_SIZE = 520;
-    const PIXEL_RATIO = window.devicePixelRatio || 1;
-    const CELL_SIZE = 4; // Smaller cells for smoother appearance
+    const CANVAS_SIZE = 560;
+    const PIXEL_RATIO = Math.min(window.devicePixelRatio || 1, 3);
+    const CELL_SIZE = 2; // Smaller cells for higher quality
     const GRID_SIZE = Math.floor(CANVAS_SIZE / CELL_SIZE);
     const CENTER = CANVAS_SIZE / 2;
-    const RADIUS = CANVAS_SIZE / 2 - 10;
+    const RADIUS = CANVAS_SIZE / 2 - 12;
     
     const EMPTY = 0;
     const DARK = 1;
@@ -263,18 +295,20 @@
     
     // State
     let grid = [];
+    let protectedZones = []; // Cells that cannot be chipped (the eye dots)
     let darkBall, lightBall;
-    let isRunning = true;
     let baseSpeed = 5;
     let animationId = null;
     let lastTime = 0;
     
+    // Eye dot centers and radius (will be set during grid init)
+    let darkDotCenter = { x: 0, y: 0 };
+    let lightDotCenter = { x: 0, y: 0 };
+    let dotPixelRadius = 0;
+    
     // DOM
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
-    const darkScoreEl = document.getElementById('darkScore');
-    const lightScoreEl = document.getElementById('lightScore');
-    const pauseBtn = document.getElementById('pauseBtn');
     const speedSlider = document.getElementById('speedSlider');
     
     // Set up high-DPI canvas
@@ -291,43 +325,55 @@
     class Ball {
       constructor(type) {
         this.type = type;
-        this.radius = 12;
+        this.radius = 14;
         this.x = 0;
         this.y = 0;
         this.vx = 0;
         this.vy = 0;
         this.trail = [];
-        this.maxTrail = 20;
+        this.maxTrail = 25;
         this.pulsePhase = Math.random() * Math.PI * 2;
+        this.stuckCounter = 0;
+        this.lastPositions = [];
+        this.blockedFrames = 0;
         
         this.spawn();
       }
       
       spawn() {
-        const targetTerritory = this.type === DARK ? LIGHT : DARK;
+        // Ball must spawn in ENEMY territory (opposite color)
+        const enemyTerritory = this.type === DARK ? LIGHT : DARK;
         let found = false;
         let attempts = 0;
         
-        while (!found && attempts < 2000) {
-          // Random position inside circle
+        while (!found && attempts < 3000) {
           const angle = Math.random() * Math.PI * 2;
-          const r = Math.random() * (RADIUS - 50);
+          const r = Math.random() * (RADIUS - 60);
           const x = CENTER + Math.cos(angle) * r;
           const y = CENTER + Math.sin(angle) * r;
+          
+          // Check we're not spawning on or near a protected dot
+          const nearDarkDot = Math.sqrt((x - darkDotCenter.x) ** 2 + (y - darkDotCenter.y) ** 2) < dotPixelRadius + this.radius + 10;
+          const nearLightDot = Math.sqrt((x - lightDotCenter.x) ** 2 + (y - lightDotCenter.y) ** 2) < dotPixelRadius + this.radius + 10;
+          
+          if (nearDarkDot || nearLightDot) {
+            attempts++;
+            continue;
+          }
           
           const gridX = Math.floor(x / CELL_SIZE);
           const gridY = Math.floor(y / CELL_SIZE);
           
           if (gridX >= 0 && gridX < GRID_SIZE && gridY >= 0 && gridY < GRID_SIZE) {
-            if (grid[gridY][gridX] === targetTerritory) {
-              // Check area around spawn point
+            if (grid[gridY][gridX] === enemyTerritory) {
               let validArea = true;
-              for (let dy = -3; dy <= 3 && validArea; dy++) {
-                for (let dx = -3; dx <= 3 && validArea; dx++) {
+              for (let dy = -4; dy <= 4 && validArea; dy++) {
+                for (let dx = -4; dx <= 4 && validArea; dx++) {
                   const cx = gridX + dx;
                   const cy = gridY + dy;
                   if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
-                    if (grid[cy][cx] !== targetTerritory && grid[cy][cx] !== EMPTY) {
+                    // Must be in enemy territory, not own territory
+                    if (grid[cy][cx] === this.type) {
                       validArea = false;
                     }
                   }
@@ -345,7 +391,7 @@
         }
         
         if (!found) {
-          // Fallback positions
+          // Fallback: dark ball goes to light side (right), light ball goes to dark side (left)
           if (this.type === DARK) {
             this.x = CENTER + RADIUS * 0.4;
             this.y = CENTER;
@@ -355,34 +401,65 @@
           }
         }
         
-        // Random velocity
+        // Strong initial velocity
         const angle = Math.random() * Math.PI * 2;
-        this.vx = Math.cos(angle) * baseSpeed;
-        this.vy = Math.sin(angle) * baseSpeed;
+        this.vx = Math.cos(angle) * baseSpeed * 1.2;
+        this.vy = Math.sin(angle) * baseSpeed * 1.2;
+      }
+      
+      ensureMovement() {
+        // Track positions to detect stuck state
+        this.lastPositions.push({ x: this.x, y: this.y });
+        if (this.lastPositions.length > 20) {
+          this.lastPositions.shift();
+        }
+        
+        // Check if stuck (moved less than threshold over recent frames)
+        if (this.lastPositions.length >= 20) {
+          const oldest = this.lastPositions[0];
+          const totalMovement = Math.sqrt(
+            (this.x - oldest.x) ** 2 + (this.y - oldest.y) ** 2
+          );
+          
+          if (totalMovement < 8) {
+            // Ball is stuck - respawn in enemy territory
+            this.trail = [];
+            this.lastPositions = [];
+            this.blockedFrames = 0;
+            this.spawn();
+            return;
+          }
+        }
+        
+        // Always ensure minimum speed
+        const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+        if (currentSpeed < baseSpeed * 0.5) {
+          const angle = Math.atan2(this.vy, this.vx) || Math.random() * Math.PI * 2;
+          this.vx = Math.cos(angle) * baseSpeed;
+          this.vy = Math.sin(angle) * baseSpeed;
+        }
       }
       
       update(deltaTime) {
-        const dt = Math.min(deltaTime / 16, 2); // Normalize to ~60fps
+        const dt = Math.min(deltaTime / 16, 2.5);
         
         // Update pulse
-        this.pulsePhase += 0.05;
+        this.pulsePhase += 0.04;
         
         // Store trail
         this.trail.push({ x: this.x, y: this.y, age: 0 });
         if (this.trail.length > this.maxTrail) {
           this.trail.shift();
         }
-        // Age trail
         this.trail.forEach(t => t.age++);
         
         // Calculate next position
         let nextX = this.x + this.vx * dt;
         let nextY = this.y + this.vy * dt;
         
-        // Check boundaries
+        // Check boundaries - bounce off circle edge
         const distFromCenter = Math.sqrt((nextX - CENTER) ** 2 + (nextY - CENTER) ** 2);
         
-        // Bounce off circle edge
         if (distFromCenter > RADIUS - this.radius) {
           const nx = (nextX - CENTER) / distFromCenter;
           const ny = (nextY - CENTER) / distFromCenter;
@@ -390,54 +467,175 @@
           this.vx -= 2 * dot * nx;
           this.vy -= 2 * dot * ny;
           
+          // Add slight randomness on bounce
+          this.vx += (Math.random() - 0.5) * 2;
+          this.vy += (Math.random() - 0.5) * 2;
+          
           // Push back inside
-          nextX = CENTER + nx * (RADIUS - this.radius - 2);
-          nextY = CENTER + ny * (RADIUS - this.radius - 2);
+          nextX = CENTER + nx * (RADIUS - this.radius - 3);
+          nextY = CENTER + ny * (RADIUS - this.radius - 3);
         }
         
-        // Check if moving into wrong territory
-        const targetTerritory = this.type === DARK ? LIGHT : DARK;
+        // Check collision with BOTH protected eye dots - bounce off both
+        // Dark ball bounces off dark dot, Light ball bounces off light dot
+        // But also prevent any ball from passing through either dot
+        
+        // Check dark dot collision
+        const distToDarkDot = Math.sqrt((nextX - darkDotCenter.x) ** 2 + (nextY - darkDotCenter.y) ** 2);
+        const minDarkDotDist = dotPixelRadius + this.radius + 4;
+        
+        if (distToDarkDot < minDarkDotDist) {
+          // Bounce off the dark dot
+          const nx = (nextX - darkDotCenter.x) / distToDarkDot;
+          const ny = (nextY - darkDotCenter.y) / distToDarkDot;
+          const dot = this.vx * nx + this.vy * ny;
+          this.vx -= 2 * dot * nx;
+          this.vy -= 2 * dot * ny;
+          
+          // Add randomness
+          this.vx += (Math.random() - 0.5) * 3;
+          this.vy += (Math.random() - 0.5) * 3;
+          
+          // Push away from dot
+          nextX = darkDotCenter.x + nx * (minDarkDotDist + 3);
+          nextY = darkDotCenter.y + ny * (minDarkDotDist + 3);
+        }
+        
+        // Check light dot collision
+        const distToLightDot = Math.sqrt((nextX - lightDotCenter.x) ** 2 + (nextY - lightDotCenter.y) ** 2);
+        const minLightDotDist = dotPixelRadius + this.radius + 4;
+        
+        if (distToLightDot < minLightDotDist) {
+          // Bounce off the light dot
+          const nx = (nextX - lightDotCenter.x) / distToLightDot;
+          const ny = (nextY - lightDotCenter.y) / distToLightDot;
+          const dot = this.vx * nx + this.vy * ny;
+          this.vx -= 2 * dot * nx;
+          this.vy -= 2 * dot * ny;
+          
+          // Add randomness
+          this.vx += (Math.random() - 0.5) * 3;
+          this.vy += (Math.random() - 0.5) * 3;
+          
+          // Push away from dot
+          nextX = lightDotCenter.x + nx * (minLightDotDist + 3);
+          nextY = lightDotCenter.y + ny * (minLightDotDist + 3);
+        }
+        
+        // Check if moving into OWN territory (not allowed!)
+        // Dark ball cannot enter dark cells, Light ball cannot enter light cells
         const gridX = Math.floor(nextX / CELL_SIZE);
         const gridY = Math.floor(nextY / CELL_SIZE);
         
         let blocked = false;
+        let blockingCells = 0;
+        
         if (gridX >= 0 && gridX < GRID_SIZE && gridY >= 0 && gridY < GRID_SIZE) {
-          // Check if we're trying to enter our own territory
-          if (grid[gridY][gridX] === this.type) {
-            blocked = true;
+          // Check a small area around the ball center
+          for (let dy = -2; dy <= 2; dy++) {
+            for (let dx = -2; dx <= 2; dx++) {
+              const cx = gridX + dx;
+              const cy = gridY + dy;
+              if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
+                const cellCenterX = cx * CELL_SIZE + CELL_SIZE / 2;
+                const cellCenterY = cy * CELL_SIZE + CELL_SIZE / 2;
+                const distToCell = Math.sqrt((nextX - cellCenterX) ** 2 + (nextY - cellCenterY) ** 2);
+                
+                // If cell is same type as ball and ball would overlap it
+                if (grid[cy][cx] === this.type && distToCell < this.radius * 0.8) {
+                  blocked = true;
+                  blockingCells++;
+                }
+              }
+            }
           }
         }
         
         if (blocked) {
-          // Reflect and add randomness
-          this.vx = -this.vx + (Math.random() - 0.5) * 3;
-          this.vy = -this.vy + (Math.random() - 0.5) * 3;
+          this.blockedFrames++;
+          
+          // If blocked too long, force movement or respawn
+          if (this.blockedFrames > 10) {
+            // Try to push through - find direction with least resistance
+            let bestAngle = Math.random() * Math.PI * 2;
+            let minBlocking = Infinity;
+            
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+              const testX = this.x + Math.cos(a) * this.radius * 2;
+              const testY = this.y + Math.sin(a) * this.radius * 2;
+              const tgx = Math.floor(testX / CELL_SIZE);
+              const tgy = Math.floor(testY / CELL_SIZE);
+              
+              let count = 0;
+              for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                  const cx = tgx + dx;
+                  const cy = tgy + dy;
+                  if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
+                    if (grid[cy][cx] === this.type) count++;
+                  }
+                }
+              }
+              
+              if (count < minBlocking) {
+                minBlocking = count;
+                bestAngle = a;
+              }
+            }
+            
+            // Move in best direction
+            this.vx = Math.cos(bestAngle) * baseSpeed * 1.5;
+            this.vy = Math.sin(bestAngle) * baseSpeed * 1.5;
+            this.x += this.vx * 0.5;
+            this.y += this.vy * 0.5;
+            this.blockedFrames = 0;
+          } else {
+            // Reflect with strong randomness
+            const reflectAngle = Math.atan2(this.vy, this.vx) + Math.PI + (Math.random() - 0.5) * Math.PI;
+            const speed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+            this.vx = Math.cos(reflectAngle) * speed * 1.1;
+            this.vy = Math.sin(reflectAngle) * speed * 1.1;
+          }
         } else {
+          this.blockedFrames = 0;
           this.x = nextX;
           this.y = nextY;
         }
         
-        // Normalize speed with slight variation
-        const speed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
-        const targetSpeed = baseSpeed + Math.sin(this.pulsePhase * 0.5) * 0.5;
-        if (speed > 0) {
-          this.vx = (this.vx / speed) * targetSpeed;
-          this.vy = (this.vy / speed) * targetSpeed;
+        // Normalize speed with organic variation
+        const currentSpeed = Math.sqrt(this.vx ** 2 + this.vy ** 2);
+        const targetSpeed = baseSpeed + Math.sin(this.pulsePhase * 0.3) * 0.8;
+        
+        if (currentSpeed > 0.1) {
+          const speedFactor = targetSpeed / currentSpeed;
+          this.vx *= speedFactor;
+          this.vy *= speedFactor;
+        } else {
+          // If somehow stopped, restart with random direction
+          const angle = Math.random() * Math.PI * 2;
+          this.vx = Math.cos(angle) * targetSpeed;
+          this.vy = Math.sin(angle) * targetSpeed;
         }
         
-        // Chip away at boundary cells
+        // Ensure constant movement
+        this.ensureMovement();
+        
+        // Chip away at boundary cells (enemy territory only)
         this.chipBoundary();
       }
       
       chipBoundary() {
+        // Ball chips away ENEMY territory cells that border its own territory
+        // Dark ball chips LIGHT cells, Light ball chips DARK cells
         const enemyTerritory = this.type === DARK ? LIGHT : DARK;
         const myTerritory = this.type;
         
         const gridX = Math.floor(this.x / CELL_SIZE);
         const gridY = Math.floor(this.y / CELL_SIZE);
         
-        // Check cells in range
-        const checkRadius = Math.ceil(this.radius / CELL_SIZE) + 1;
+        const checkRadius = Math.ceil(this.radius / CELL_SIZE) + 3;
+        const minChipDist = this.radius * 1.2; // Don't chip cells too close - leave escape room
+        const dotBufferZone = dotPixelRadius + 20; // No chipping within this distance of either dot
         
         for (let dy = -checkRadius; dy <= checkRadius; dy++) {
           for (let dx = -checkRadius; dx <= checkRadius; dx++) {
@@ -445,22 +643,35 @@
             const cy = gridY + dy;
             
             if (cx >= 0 && cx < GRID_SIZE && cy >= 0 && cy < GRID_SIZE) {
-              // Looking for enemy cells that border my territory
+              // Only chip enemy territory cells
               if (grid[cy][cx] === enemyTerritory) {
-                // Check if this cell borders my territory
+                // Check if this cell is protected (part of an eye dot)
+                if (protectedZones[cy] && protectedZones[cy][cx]) {
+                  continue; // Skip protected cells
+                }
+                
+                // Check if this cell is within buffer zone of either protected dot
+                const cellCenterX = cx * CELL_SIZE + CELL_SIZE / 2;
+                const cellCenterY = cy * CELL_SIZE + CELL_SIZE / 2;
+                
+                const distToDarkDot = Math.sqrt((cellCenterX - darkDotCenter.x) ** 2 + (cellCenterY - darkDotCenter.y) ** 2);
+                const distToLightDot = Math.sqrt((cellCenterX - lightDotCenter.x) ** 2 + (cellCenterY - lightDotCenter.y) ** 2);
+                
+                if (distToDarkDot < dotBufferZone || distToLightDot < dotBufferZone) {
+                  continue; // Skip cells near protected dots
+                }
+                
+                // Only chip if it borders my territory
                 if (this.cellBordersTerritory(cx, cy, myTerritory)) {
-                  // Check distance from ball
-                  const cellCenterX = cx * CELL_SIZE + CELL_SIZE / 2;
-                  const cellCenterY = cy * CELL_SIZE + CELL_SIZE / 2;
                   const dist = Math.sqrt((this.x - cellCenterX) ** 2 + (this.y - cellCenterY) ** 2);
                   
-                  if (dist < this.radius + CELL_SIZE * 0.6) {
-                    // Chip this cell! Convert to my territory
+                  // Only chip cells at the edge of our reach, not too close
+                  if (dist > minChipDist && dist < this.radius + CELL_SIZE * 2) {
                     grid[cy][cx] = myTerritory;
                     
-                    // Slight bounce
-                    this.vx += (Math.random() - 0.5) * 1.5;
-                    this.vy += (Math.random() - 0.5) * 1.5;
+                    // Slight influence on direction
+                    this.vx += (Math.random() - 0.5) * 0.5;
+                    this.vy += (Math.random() - 0.5) * 0.5;
                   }
                 }
               }
@@ -470,9 +681,7 @@
       }
       
       cellBordersTerritory(cx, cy, territory) {
-        const neighbors = [
-          [-1, 0], [1, 0], [0, -1], [0, 1]
-        ];
+        const neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]];
         
         for (const [dx, dy] of neighbors) {
           const nx = cx + dx;
@@ -491,32 +700,32 @@
         for (let i = 0; i < this.trail.length; i++) {
           const t = this.trail[i];
           const progress = i / this.trail.length;
-          const alpha = progress * 0.5;
-          const size = progress * this.radius * 0.8;
+          const alpha = progress * 0.55;
+          const size = progress * this.radius * 0.85;
           
           ctx.beginPath();
           ctx.arc(t.x, t.y, size, 0, Math.PI * 2);
           
           if (this.type === DARK) {
-            ctx.fillStyle = `rgba(20, 20, 20, ${alpha})`;
+            ctx.fillStyle = `rgba(15, 15, 15, ${alpha})`;
           } else {
-            ctx.fillStyle = `rgba(240, 240, 235, ${alpha})`;
+            ctx.fillStyle = `rgba(245, 243, 238, ${alpha})`;
           }
           ctx.fill();
         }
         
         // Outer glow
-        const glowRadius = this.radius + 8 + Math.sin(this.pulsePhase) * 2;
+        const glowRadius = this.radius + 10 + Math.sin(this.pulsePhase) * 3;
         const glowGradient = ctx.createRadialGradient(
           this.x, this.y, this.radius,
           this.x, this.y, glowRadius
         );
         
         if (this.type === DARK) {
-          glowGradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+          glowGradient.addColorStop(0, 'rgba(0, 0, 0, 0.45)');
           glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         } else {
-          glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+          glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
           glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
         }
         
@@ -537,14 +746,14 @@
         
         if (this.type === DARK) {
           ballGradient.addColorStop(0, '#4a4a4a');
-          ballGradient.addColorStop(0.4, '#2a2a2a');
-          ballGradient.addColorStop(0.8, '#151515');
-          ballGradient.addColorStop(1, '#050505');
+          ballGradient.addColorStop(0.35, '#2a2a2a');
+          ballGradient.addColorStop(0.75, '#151515');
+          ballGradient.addColorStop(1, '#080808');
         } else {
           ballGradient.addColorStop(0, '#ffffff');
-          ballGradient.addColorStop(0.4, '#f5f5f0');
-          ballGradient.addColorStop(0.8, '#e8e8e0');
-          ballGradient.addColorStop(1, '#d5d5cc');
+          ballGradient.addColorStop(0.35, '#f8f8f3');
+          ballGradient.addColorStop(0.75, '#eaeae2');
+          ballGradient.addColorStop(1, '#d8d8d0');
         }
         
         ctx.beginPath();
@@ -553,7 +762,7 @@
         ctx.fill();
         
         // Inner opposite dot
-        const dotRadius = this.radius * 0.25;
+        const dotRadius = this.radius * 0.28;
         const dotGradient = ctx.createRadialGradient(
           this.x - dotRadius * 0.2,
           this.y - dotRadius * 0.2,
@@ -581,21 +790,34 @@
         ctx.arc(
           this.x - this.radius * 0.35,
           this.y - this.radius * 0.35,
-          this.radius * 0.2,
+          this.radius * 0.22,
           0, Math.PI * 2
         );
         ctx.fillStyle = this.type === DARK 
-          ? 'rgba(255, 255, 255, 0.15)' 
-          : 'rgba(255, 255, 255, 0.5)';
+          ? 'rgba(255, 255, 255, 0.18)' 
+          : 'rgba(255, 255, 255, 0.55)';
         ctx.fill();
       }
     }
     
     function initializeGrid() {
       grid = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(EMPTY));
+      protectedZones = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
       
       const gridCenter = GRID_SIZE / 2;
       const gridRadius = (RADIUS / CELL_SIZE);
+      const halfR = gridRadius / 2;
+      const dotRadius = gridRadius / 8;
+      const protectedRadius = dotRadius * 1.5; // Larger protection zone around dots
+      
+      // Calculate dot centers in pixel coordinates
+      const topCenterY = gridCenter - halfR;
+      const bottomCenterY = gridCenter + halfR;
+      
+      // Dark dot is at top (in light area), Light dot is at bottom (in dark area)
+      darkDotCenter = { x: CENTER, y: topCenterY * CELL_SIZE };
+      lightDotCenter = { x: CENTER, y: bottomCenterY * CELL_SIZE };
+      dotPixelRadius = dotRadius * CELL_SIZE;
       
       for (let y = 0; y < GRID_SIZE; y++) {
         for (let x = 0; x < GRID_SIZE; x++) {
@@ -603,42 +825,38 @@
           const dy = y - gridCenter;
           const dist = Math.sqrt(dx * dx + dy * dy);
           
-          // Only inside circle
           if (dist <= gridRadius - 0.5) {
-            const halfR = gridRadius / 2;
-            
-            // Top small circle center (in grid coords)
-            const topCenterY = gridCenter - halfR;
             const topDist = Math.sqrt(dx * dx + (y - topCenterY) ** 2);
-            
-            // Bottom small circle center
-            const bottomCenterY = gridCenter + halfR;
             const bottomDist = Math.sqrt(dx * dx + (y - bottomCenterY) ** 2);
             
             let cellType;
             
-            // Classic yin-yang curves
             if (topDist <= halfR) {
-              // Inside top semicircle (light)
               cellType = LIGHT;
             } else if (bottomDist <= halfR) {
-              // Inside bottom semicircle (dark)
               cellType = DARK;
             } else {
-              // Main division by x
               cellType = dx < 0 ? DARK : LIGHT;
             }
             
-            // Small dots
-            const dotRadius = gridRadius / 8;
+            // Small eye dots
             const topDotDist = Math.sqrt(dx * dx + (y - topCenterY) ** 2);
             const bottomDotDist = Math.sqrt(dx * dx + (y - bottomCenterY) ** 2);
             
+            // Mark cells near dots as protected (even surrounding cells)
+            if (topDotDist <= protectedRadius) {
+              protectedZones[y][x] = true;
+            }
+            if (bottomDotDist <= protectedRadius) {
+              protectedZones[y][x] = true;
+            }
+            
+            // Set actual dot colors
             if (topDotDist <= dotRadius) {
-              cellType = DARK; // Dark dot in light
+              cellType = DARK; // Dark dot in light area (top)
             }
             if (bottomDotDist <= dotRadius) {
-              cellType = LIGHT; // Light dot in dark
+              cellType = LIGHT; // Light dot in dark area (bottom)
             }
             
             grid[y][x] = cellType;
@@ -646,16 +864,19 @@
         }
       }
       
-      // Create balls
       darkBall = new Ball(DARK);
       lightBall = new Ball(LIGHT);
     }
     
+    // Pre-create offscreen canvas for cell rendering
+    const cellCanvas = document.createElement('canvas');
+    cellCanvas.width = GRID_SIZE;
+    cellCanvas.height = GRID_SIZE;
+    const cellCtx = cellCanvas.getContext('2d');
+    
     function draw() {
-      // Clear
       ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
       
-      // Clip to circle
       ctx.save();
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, RADIUS, 0, Math.PI * 2);
@@ -671,11 +892,7 @@
       ctx.fillStyle = bgGradient;
       ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
       
-      // Create offscreen canvas for smoother cell rendering
-      const cellCanvas = document.createElement('canvas');
-      cellCanvas.width = GRID_SIZE;
-      cellCanvas.height = GRID_SIZE;
-      const cellCtx = cellCanvas.getContext('2d');
+      // Render cells to offscreen canvas
       const imageData = cellCtx.createImageData(GRID_SIZE, GRID_SIZE);
       
       for (let y = 0; y < GRID_SIZE; y++) {
@@ -683,18 +900,16 @@
           const idx = (y * GRID_SIZE + x) * 4;
           
           if (grid[y][x] === DARK) {
-            // Rich dark with subtle variation
-            const variation = Math.sin(x * 0.1) * 5 + Math.cos(y * 0.1) * 5;
-            imageData.data[idx] = 15 + variation;
-            imageData.data[idx + 1] = 15 + variation;
-            imageData.data[idx + 2] = 18 + variation;
+            const variation = Math.sin(x * 0.08) * 4 + Math.cos(y * 0.08) * 4;
+            imageData.data[idx] = 12 + variation;
+            imageData.data[idx + 1] = 12 + variation;
+            imageData.data[idx + 2] = 15 + variation;
             imageData.data[idx + 3] = 255;
           } else if (grid[y][x] === LIGHT) {
-            // Warm cream white with variation
-            const variation = Math.sin(x * 0.15) * 3 + Math.cos(y * 0.15) * 3;
-            imageData.data[idx] = 245 + variation;
-            imageData.data[idx + 1] = 243 + variation;
-            imageData.data[idx + 2] = 235 + variation;
+            const variation = Math.sin(x * 0.12) * 2 + Math.cos(y * 0.12) * 2;
+            imageData.data[idx] = 248 + variation;
+            imageData.data[idx + 1] = 246 + variation;
+            imageData.data[idx + 2] = 240 + variation;
             imageData.data[idx + 3] = 255;
           } else {
             imageData.data[idx + 3] = 0;
@@ -704,14 +919,13 @@
       
       cellCtx.putImageData(imageData, 0, 0);
       
-      // Draw scaled up with smoothing
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(cellCanvas, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
       
-      // Draw boundary highlight
-      ctx.strokeStyle = 'rgba(128, 128, 128, 0.15)';
-      ctx.lineWidth = 1;
+      // Subtle boundary glow
+      ctx.strokeStyle = 'rgba(128, 128, 128, 0.12)';
+      ctx.lineWidth = 0.5;
       
       for (let y = 1; y < GRID_SIZE - 1; y++) {
         for (let x = 1; x < GRID_SIZE - 1; x++) {
@@ -728,7 +942,7 @@
             if (isDarkBorder || isLightBorder) {
               const px = x * CELL_SIZE;
               const py = y * CELL_SIZE;
-              ctx.fillStyle = 'rgba(128, 128, 128, 0.08)';
+              ctx.fillStyle = 'rgba(128, 128, 128, 0.06)';
               ctx.fillRect(px, py, CELL_SIZE, CELL_SIZE);
             }
           }
@@ -741,62 +955,29 @@
       
       ctx.restore();
       
-      // Draw elegant border
+      // Elegant border
       ctx.beginPath();
       ctx.arc(CENTER, CENTER, RADIUS, 0, Math.PI * 2);
       ctx.strokeStyle = '#2a2a2a';
-      ctx.lineWidth = 6;
+      ctx.lineWidth = 7;
       ctx.stroke();
       
       ctx.beginPath();
-      ctx.arc(CENTER, CENTER, RADIUS + 2, 0, Math.PI * 2);
+      ctx.arc(CENTER, CENTER, RADIUS + 2.5, 0, Math.PI * 2);
       ctx.strokeStyle = '#1a1a1a';
       ctx.lineWidth = 2;
       ctx.stroke();
-    }
-    
-    function countScores() {
-      let dark = 0, light = 0;
-      for (let y = 0; y < GRID_SIZE; y++) {
-        for (let x = 0; x < GRID_SIZE; x++) {
-          if (grid[y][x] === DARK) dark++;
-          else if (grid[y][x] === LIGHT) light++;
-        }
-      }
-      return { dark, light };
-    }
-    
-    function updateScores() {
-      const scores = countScores();
-      darkScoreEl.textContent = scores.dark;
-      lightScoreEl.textContent = scores.light;
     }
     
     function gameLoop(timestamp) {
       const deltaTime = timestamp - lastTime;
       lastTime = timestamp;
       
-      if (isRunning) {
-        darkBall.update(deltaTime);
-        lightBall.update(deltaTime);
-        updateScores();
-      }
+      darkBall.update(deltaTime);
+      lightBall.update(deltaTime);
       
       draw();
       animationId = requestAnimationFrame(gameLoop);
-    }
-    
-    function togglePause() {
-      isRunning = !isRunning;
-      pauseBtn.textContent = isRunning ? 'Pause' : 'Resume';
-      pauseBtn.classList.toggle('paused', !isRunning);
-    }
-    
-    function resetGame() {
-      initializeGrid();
-      isRunning = true;
-      pauseBtn.textContent = 'Pause';
-      pauseBtn.classList.remove('paused');
     }
     
     function updateSpeed() {
